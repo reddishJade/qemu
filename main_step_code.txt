@@ -1,0 +1,35 @@
+linux-user/main.c
+ret = loader_exec(execfd, exec_path, target_argv, target_environ, regs,
+cpu_loop(env);)
+
+x86_64/../i386/cpu_loop.c
+trapnr = cpu_exec(cs);
+
+accel/tcg/cpu-exec.c────────────────
+tb = tb_lookup(cpu, pc, cs_base, flags, cflags);
+tb = tb_gen_code(cpu, pc, cs_base, flags, cflags);
+
+translate-all.c
+return tcg_gen_code(tcg_ctx, tb, pc);
+
+cpu-exec.c─────8
+stlret = tcg_qemu_tb_exec(env, tb_ptr);
+stl        tb = tb_lookup(cpu, pc, cs_base, flags, cflags);
+tb = tb_gen_code(cpu, pc, cs_base, flags, cflags);
+
+translate-all.c
+return tcg_gen_code(tcg_ctx, tb, pc);
+
+cpu-exec.c─────$r10
+addret = tcg_qemu_tb_exec(env, tb_ptr);
+add        tb = tb_lookup(cpu, pc, cs_base, flags, cflags);
+tb = tb_gen_code(cpu, pc, cs_base, flags, cflags);
+
+translate-all.c
+return tcg_gen_code(tcg_ctx, tb, pc);
+
+cpu-exec.c─────$r10)
+addret = tcg_qemu_tb_exec(env, tb_ptr);
+add        tb = tb_lookup(cpu, pc, cs_base, flags, cflags);
+tb = tb_gen_code(cpu, pc, cs_base, flags, cflags);
+
