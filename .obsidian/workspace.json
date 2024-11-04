@@ -1,0 +1,202 @@
+{
+  "main": {
+    "id": "cd9049424356e9a6",
+    "type": "split",
+    "children": [
+      {
+        "id": "b3ba4c1f211ded57",
+        "type": "tabs",
+        "children": [
+          {
+            "id": "1896170cf25809d2",
+            "type": "leaf",
+            "state": {
+              "type": "image",
+              "state": {
+                "file": "gdbinit.png"
+              },
+              "icon": "lucide-image",
+              "title": "gdbinit"
+            }
+          }
+        ]
+      }
+    ],
+    "direction": "vertical"
+  },
+  "left": {
+    "id": "123c87bc337cd378",
+    "type": "split",
+    "children": [
+      {
+        "id": "ba7c821aaaaa1d1b",
+        "type": "tabs",
+        "children": [
+          {
+            "id": "822aadcfd392ee24",
+            "type": "leaf",
+            "state": {
+              "type": "file-explorer",
+              "state": {
+                "sortOrder": "alphabetical"
+              },
+              "icon": "lucide-folder-closed",
+              "title": "文件列表"
+            }
+          },
+          {
+            "id": "a8ebc54bbb1eb4c5",
+            "type": "leaf",
+            "state": {
+              "type": "search",
+              "state": {
+                "query": "",
+                "matchingCase": false,
+                "explainSearch": false,
+                "collapseAll": false,
+                "extraContext": false,
+                "sortOrder": "alphabetical"
+              },
+              "icon": "lucide-search",
+              "title": "搜索"
+            }
+          },
+          {
+            "id": "9bf7ecf1bc9ffaf6",
+            "type": "leaf",
+            "state": {
+              "type": "bookmarks",
+              "state": {},
+              "icon": "lucide-bookmark",
+              "title": "书签"
+            }
+          }
+        ]
+      }
+    ],
+    "direction": "horizontal",
+    "width": 300
+  },
+  "right": {
+    "id": "6b22f8a5ce958bc2",
+    "type": "split",
+    "children": [
+      {
+        "id": "e83989ee24f368f3",
+        "type": "tabs",
+        "children": [
+          {
+            "id": "8e2d8962edbff00e",
+            "type": "leaf",
+            "state": {
+              "type": "backlink",
+              "state": {
+                "file": "前端&后端.md",
+                "collapseAll": true,
+                "extraContext": false,
+                "sortOrder": "alphabetical",
+                "showSearch": false,
+                "searchQuery": "",
+                "backlinkCollapsed": false,
+                "unlinkedCollapsed": true
+              },
+              "icon": "links-coming-in",
+              "title": "前端&后端 的反向链接列表"
+            }
+          },
+          {
+            "id": "18458b1103e35d04",
+            "type": "leaf",
+            "state": {
+              "type": "outgoing-link",
+              "state": {
+                "file": "translator_loop.md",
+                "linksCollapsed": false,
+                "unlinkedCollapsed": true
+              },
+              "icon": "links-going-out",
+              "title": "translator_loop 的出链列表"
+            }
+          },
+          {
+            "id": "1843e17e5147d855",
+            "type": "leaf",
+            "state": {
+              "type": "tag",
+              "state": {
+                "sortOrder": "frequency",
+                "useHierarchy": true
+              },
+              "icon": "lucide-tags",
+              "title": "标签"
+            }
+          },
+          {
+            "id": "b5bb48e4ac56cf2d",
+            "type": "leaf",
+            "state": {
+              "type": "outline",
+              "state": {
+                "file": "gdbinit.png"
+              },
+              "icon": "lucide-list",
+              "title": "gdbinit 的大纲"
+            }
+          }
+        ],
+        "currentTab": 3
+      }
+    ],
+    "direction": "horizontal",
+    "width": 300,
+    "collapsed": true
+  },
+  "left-ribbon": {
+    "hiddenItems": {
+      "switcher:打开快速切换": false,
+      "graph:查看关系图谱": false,
+      "canvas:新建白板": false,
+      "daily-notes:打开/创建今天的日记": false,
+      "templates:插入模板": false,
+      "command-palette:打开命令面板": false
+    }
+  },
+  "active": "1896170cf25809d2",
+  "lastOpenFiles": [
+    "QEMU_Detail.md",
+    "README.md",
+    "gdbinit.png",
+    "前端&后端.md",
+    "创建链接.md",
+    "欢迎.md",
+    "关键函数/tcgtcg.c.md",
+    "关键函数/targeti386tcgtranslate.c.md",
+    "关键函数/acceltcgtranslator.c.md",
+    "g/未命名.md",
+    "关键函数",
+    "acceltcgtranslator.c.md",
+    "targeti386tcgtranslate.c.md",
+    "tcgtcg.c.md",
+    "前端/x86_ldub_code.md",
+    "前端/translator_ldub.md",
+    "前端/translator_access.md",
+    "前端/ldub.md",
+    "前端/gen_nop_modrm.md",
+    "前端/advance_pc.md",
+    "前端/translator_loop.md",
+    "后端/tcg_gen_code.md",
+    "后端/tcg_func_start.md",
+    "主函数/tb_gen_code_core.md",
+    "主函数/tb_gen_code_full.md",
+    "主函数/setjmp_gen_code.md",
+    "前端/plugin_gen_tb_start.md",
+    "主函数/main_step.drawio",
+    "主函数/user_main.c",
+    "主函数",
+    "新建文件夹",
+    "后端",
+    "前端",
+    "user_main.c",
+    "main_step.drawio"
+  ]
+}

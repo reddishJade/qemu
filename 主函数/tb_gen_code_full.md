@@ -1,30 +1,34 @@
 ```c
-/* Called with mmap_lock held for user mode emulation.  */
+/* tb_gen_code 函数在用户模式仿真中调用，生成一个新的翻译块(Translation Block, TB) */
 TranslationBlock *tb_gen_code(CPUState *cpu,
                               target_ulong pc, target_ulong cs_base,
                               uint32_t flags, int cflags)
 {
+    // 获取当前CPU的架构状态和指令翻译上下文
     CPUArchState *env = cpu->env_ptr;
     TranslationBlock *tb, *existing_tb;
-    tb_page_addr_t phys_pc;
-    tcg_insn_unit *gen_code_buf;
-    int gen_code_size, search_size, max_insns;
+    tb_page_addr_t phys_pc; // 存储物理页的地址
+    tcg_insn_unit *gen_code_buf; // 指向生成的代码缓冲区
+    int gen_code_size, search_size, max_insns; // 代码大小、查找大小、最大指令数
 #ifdef CONFIG_PROFILER
-    TCGProfile *prof = &tcg_ctx->prof;
+    TCGProfile *prof = &tcg_ctx->prof; // 配置分析器
 #endif
     int64_t ti;
     void *host_pc;
 
+    // 检查是否持有内存锁，确保安全写入
     assert_memory_lock();
     qemu_thread_jit_write();
 
+    // 获取指定PC的物理地址，如果失败则返回 -1
     phys_pc = get_page_addr_code_hostp(env, pc, &host_pc);
 
+    // 若物理地址无效，则生成一个仅包含一条指令的 TB
     if (phys_pc == -1) {
-        /* Generate a one-shot TB with 1 insn in it */
         cflags = (cflags & ~CF_COUNT_MASK) | CF_LAST_IO | 1;
     }
 
+    // 确定生成TB的指令数上限
     max_insns = cflags & CF_COUNT_MASK;
     if (max_insns == 0) {
         max_insns = TCG_MAX_INSNS;
@@ -32,66 +36,52 @@ TranslationBlock *tb_gen_code(CPUState *cpu,
     QEMU_BUILD_BUG_ON(CF_COUNT_MASK + 1 != TCG_MAX_INSNS);
 
  buffer_overflow:
-    tb = tcg_tb_alloc(tcg_ctx);
+    tb = tcg_tb_alloc(tcg_ctx); // 为新的 TB 分配内存
     if (unlikely(!tb)) {
-        /* flush must be done */
+        // 若 TB 分配失败，则刷新 TB 缓存并退出
         tb_flush(cpu);
         mmap_unlock();
-        /* Make the execution loop process the flush as soon as possible.  */
         cpu->exception_index = EXCP_INTERRUPT;
         cpu_loop_exit(cpu);
     }
 
-    gen_code_buf = tcg_ctx->code_gen_ptr;
-    tb->tc.ptr = tcg_splitwx_to_rx(gen_code_buf);
+    gen_code_buf = tcg_ctx->code_gen_ptr; // 获取生成代码的缓冲区指针
+    tb->tc.ptr = tcg_splitwx_to_rx(gen_code_buf); // 将缓冲区转换为只读区域
 #if !TARGET_TB_PCREL
-    tb->pc = pc;
+    tb->pc = pc; // 设置指令的起始PC
 #endif
     tb->cs_base = cs_base;
     tb->flags = flags;
     tb->cflags = cflags;
     tb->trace_vcpu_dstate = *cpu->trace_dstate;
-    tb_set_page_addr0(tb, phys_pc);
+    tb_set_page_addr0(tb, phys_pc); // 设定页地址
     tb_set_page_addr1(tb, -1);
     tcg_ctx->tb_cflags = cflags;
  tb_overflow:
 
 #ifdef CONFIG_PROFILER
-    /* includes aborted translations because of exceptions */
+    // 如果启用分析器，则记录 TB 数量及翻译开始时间
     qatomic_set(&prof->tb_count1, prof->tb_count1 + 1);
     ti = profile_getclock();
 #endif
 
+    // 记录翻译块，用于调试跟踪
     trace_translate_block(tb, pc, tb->tc.ptr);
 
+    // 开始生成代码，返回生成的代码大小
     gen_code_size = setjmp_gen_code(env, tb, pc, host_pc, &max_insns, &ti);
     if (unlikely(gen_code_size < 0)) {
+        // 处理生成代码时的异常
         switch (gen_code_size) {
         case -1:
-            /*
-             * Overflow of code_gen_buffer, or the current slice of it.
-             *
-             * TODO: We don't need to re-do gen_intermediate_code, nor
-             * should we re-do the tcg optimization currently hidden
-             * inside tcg_gen_code.  All that should be required is to
-             * flush the TBs, allocate a new TB, re-initialize it per
-             * above, and re-do the actual code generation.
-             */
+            // 代码缓冲区溢出，重新生成代码
             qemu_log_mask(CPU_LOG_TB_OP | CPU_LOG_TB_OP_OPT,
                           "Restarting code generation for "
                           "code_gen_buffer overflow\n");
             goto buffer_overflow;
 
         case -2:
-            /*
-             * The code generated for the TranslationBlock is too large.
-             * The maximum size allowed by the unwind info is 64k.
-             * There may be stricter constraints from relocations
-             * in the tcg backend.
-             *
-             * Try again with half as many insns as we attempted this time.
-             * If a single insn overflows, there's a bug somewhere...
-             */
+            // TB的代码大小超出允许的范围，减少指令数并重试
             assert(max_insns > 1);
             max_insns /= 2;
             qemu_log_mask(CPU_LOG_TB_OP | CPU_LOG_TB_OP_OPT,
@@ -104,13 +94,16 @@ TranslationBlock *tb_gen_code(CPUState *cpu,
             g_assert_not_reached();
         }
     }
+
+    // 编码查找功能，处理缓冲区溢出
     search_size = encode_search(tb, (void *)gen_code_buf + gen_code_size);
     if (unlikely(search_size < 0)) {
         goto buffer_overflow;
     }
-    tb->tc.size = gen_code_size;
+    tb->tc.size = gen_code_size; // 设置 TB 的大小
 
 #ifdef CONFIG_PROFILER
+    // 更新分析器记录的代码生成和查找时间
     qatomic_set(&prof->code_time, prof->code_time + profile_getclock() - ti);
     qatomic_set(&prof->code_in_len, prof->code_in_len + tb->size);
     qatomic_set(&prof->code_out_len, prof->code_out_len + gen_code_size);
@@ -118,6 +111,7 @@ TranslationBlock *tb_gen_code(CPUState *cpu,
 #endif
 
 #ifdef DEBUG_DISAS
+    // 若启用指令反汇编输出，则打印反汇编指令
     if (qemu_loglevel_mask(CPU_LOG_TB_OUT_ASM) &&
         qemu_log_in_addr_range(pc)) {
         FILE *logfile = qemu_log_trylock();
@@ -127,6 +121,7 @@ TranslationBlock *tb_gen_code(CPUState *cpu,
             size_t chunk_start;
             int insn = 0;
 
+            // 根据生成的代码和数据段的大小，打印相关的指令和数据信息
             if (tcg_ctx->data_gen_ptr) {
                 rx_data_gen_ptr = tcg_splitwx_to_rx(tcg_ctx->data_gen_ptr);
                 code_size = (const void *)rx_data_gen_ptr - tb->tc.ptr;
@@ -137,7 +132,6 @@ TranslationBlock *tb_gen_code(CPUState *cpu,
                 data_size = 0;
             }
 
-            /* Dump header and the first instruction */
             fprintf(logfile, "OUT: [size=%d]\n", gen_code_size);
             fprintf(logfile,
                     "  -- guest addr 0x" TARGET_FMT_lx " + tb prologue\n",
@@ -145,11 +139,6 @@ TranslationBlock *tb_gen_code(CPUState *cpu,
             chunk_start = tcg_ctx->gen_insn_end_off[insn];
             disas(logfile, tb->tc.ptr, chunk_start);
 
-            /*
-             * Dump each instruction chunk, wrapping up empty chunks into
-             * the next instruction. The whole array is offset so the
-             * first entry is the beginning of the 2nd instruction.
-             */
             while (insn < tb->icount) {
                 size_t chunk_end = tcg_ctx->gen_insn_end_off[insn];
                 if (chunk_end > chunk_start) {
@@ -168,7 +157,6 @@ TranslationBlock *tb_gen_code(CPUState *cpu,
                       code_size - chunk_start);
             }
 
-            /* Finally dump any data we may have after the block */
             if (data_size) {
                 int i;
                 fprintf(logfile, "  data: [size=%d]\n", data_size);
@@ -196,7 +184,7 @@ TranslationBlock *tb_gen_code(CPUState *cpu,
         ROUND_UP((uintptr_t)gen_code_buf + gen_code_size + search_size,
                  CODE_GEN_ALIGN));
 
-    /* init jump list */
+    // 初始化跳转列表，设置默认的跳转目标地址
     qemu_spin_init(&tb->jmp_lock);
     tb->jmp_list_head = (uintptr_t)NULL;
     tb->jmp_list_next[0] = (uintptr_t)NULL;
@@ -204,7 +192,7 @@ TranslationBlock *tb_gen_code(CPUState *cpu,
     tb->jmp_dest[0] = (uintptr_t)NULL;
     tb->jmp_dest[1] = (uintptr_t)NULL;
 
-    /* init original jump addresses which have been set during tcg_gen_code() */
+    // 初始化在生成代码过程中设置的跳转地址
     if (tb->jmp_reset_offset[0] != TB_JMP_RESET_OFFSET_INVALID) {
         tb_reset_jump(tb, 0);
     }
@@ -212,31 +200,18 @@ TranslationBlock *tb_gen_code(CPUState *cpu,
         tb_reset_jump(tb, 1);
     }
 
-    /*
-     * If the TB is not associated with a physical RAM page then it must be
-     * a temporary one-insn TB, and we have nothing left to do. Return early
-     * before attempting to link to other TBs or add to the lookup table.
-     */
+    /* 如果TB未关联物理内存页，则返回 */
     if (tb_page_addr0(tb) == -1) {
         return tb;
     }
 
-    /*
-     * Insert TB into the corresponding region tree before publishing it
-     * through QHT. Otherwise rewinding happened in the TB might fail to
-     * lookup itself using host PC.
-     */
+    /* 插入 TB 到对应的区域树中 */
     tcg_tb_insert(tb);
 
-    /*
-     * No explicit memory barrier is required -- tb_link_page() makes the
-     * TB visible in a consistent state.
-     */
+    // 检查翻译块是否已存在，若已存在则返回
     existing_tb = tb_link_page(tb, tb_page_addr0(tb), tb_page_addr1(tb));
-    /* if the TB already exists, discard what we just translated */
     if (unlikely(existing_tb != tb)) {
         uintptr_t orig_aligned = (uintptr_t)gen_code_buf;
-
         orig_aligned -= ROUND_UP(sizeof(*tb), qemu_icache_linesize);
         qatomic_set(&tcg_ctx->code_gen_ptr, (void *)orig_aligned);
         tcg_tb_remove(tb);
@@ -244,4 +219,5 @@ TranslationBlock *tb_gen_code(CPUState *cpu,
     }
     return tb;
 }
+
 ```
