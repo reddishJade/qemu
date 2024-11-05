@@ -13,12 +13,12 @@
             "state": {
               "type": "markdown",
               "state": {
-                "file": "QEMU_Detail.md",
-                "mode": "preview",
+                "file": "Qemu_Detailed_Study.md",
+                "mode": "source",
                 "source": false
               },
               "icon": "lucide-file",
-              "title": "QEMU_Detail"
+              "title": "Qemu_Detailed_Study"
             }
           }
         ]
@@ -140,10 +140,10 @@
             "state": {
               "type": "outline",
               "state": {
-                "file": "gdbinit.png"
+                "file": "Qemu_Detailed_Study.md"
               },
               "icon": "lucide-list",
-              "title": "gdbinit 的大纲"
+              "title": "Qemu_Detailed_Study 的大纲"
             }
           }
         ],
@@ -166,6 +166,8 @@
   },
   "active": "1896170cf25809d2",
   "lastOpenFiles": [
+    "DBT/前端&后端.md",
+    "Qemu_Detailed_Study.md",
     "func/targeti386tcgtranslate.c.md",
     "func/tcgtcg.c.md",
     "func/acceltcgtranslator.c.md",
@@ -177,7 +179,6 @@
     "main/main_step.md",
     "main/main_step.drawio",
     "main",
-    "DBT/前端&后端.md",
     "DBT/前端/x86_ldub_code.md",
     "DBT/前端/translator_loop.md",
     "DBT/前端/translator_ldub.md",
@@ -197,7 +198,6 @@
     "DBT",
     "新建文件夹",
     "gdbinit.png",
-    "QEMU_Detail.md",
     "README.md",
     "前端&后端.md",
     "创建链接.md",
