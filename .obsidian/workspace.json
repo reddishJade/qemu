@@ -11,12 +11,14 @@
             "id": "1896170cf25809d2",
             "type": "leaf",
             "state": {
-              "type": "image",
+              "type": "markdown",
               "state": {
-                "file": "gdbinit.png"
+                "file": "QEMU_Detail.md",
+                "mode": "preview",
+                "source": false
               },
-              "icon": "lucide-image",
-              "title": "gdbinit"
+              "icon": "lucide-file",
+              "title": "QEMU_Detail"
             }
           }
         ]
@@ -75,7 +77,8 @@
       }
     ],
     "direction": "horizontal",
-    "width": 300
+    "width": 300,
+    "collapsed": true
   },
   "right": {
     "id": "6b22f8a5ce958bc2",
@@ -163,40 +166,42 @@
   },
   "active": "1896170cf25809d2",
   "lastOpenFiles": [
+    "func/targeti386tcgtranslate.c.md",
+    "func/tcgtcg.c.md",
+    "func/acceltcgtranslator.c.md",
+    "func",
+    "main/tb_gen_code_full.md",
+    "main/user_main.c",
+    "main/tb_gen_code_core.md",
+    "main/setjmp_gen_code.md",
+    "main/main_step.md",
+    "main/main_step.drawio",
+    "main",
+    "DBT/前端&后端.md",
+    "DBT/前端/x86_ldub_code.md",
+    "DBT/前端/translator_loop.md",
+    "DBT/前端/translator_ldub.md",
+    "DBT/前端/translator_access.md",
+    "DBT/前端/plugin_gen_tb_start.md",
+    "DBT/前端/ldub.md",
+    "DBT/前端/i386_tr_translate_insn.md",
+    "DBT/前端/gen_tb_start&end.md",
+    "DBT/前端/gen_nop_modrm.md",
+    "DBT/前端/gen_intermediate_code.md",
+    "DBT/前端/disas_insn.md",
+    "DBT/前端/advance_pc.md",
+    "DBT/前端",
+    "DBT/后端/tcg_gen_code.md",
+    "DBT/后端/tcg_func_start.md",
+    "DBT/后端",
+    "DBT",
+    "新建文件夹",
+    "gdbinit.png",
     "QEMU_Detail.md",
     "README.md",
-    "gdbinit.png",
     "前端&后端.md",
     "创建链接.md",
-    "欢迎.md",
-    "关键函数/tcgtcg.c.md",
-    "关键函数/targeti386tcgtranslate.c.md",
-    "关键函数/acceltcgtranslator.c.md",
-    "g/未命名.md",
     "关键函数",
-    "acceltcgtranslator.c.md",
-    "targeti386tcgtranslate.c.md",
-    "tcgtcg.c.md",
-    "前端/x86_ldub_code.md",
-    "前端/translator_ldub.md",
-    "前端/translator_access.md",
-    "前端/ldub.md",
-    "前端/gen_nop_modrm.md",
-    "前端/advance_pc.md",
-    "前端/translator_loop.md",
-    "后端/tcg_gen_code.md",
-    "后端/tcg_func_start.md",
-    "主函数/tb_gen_code_core.md",
-    "主函数/tb_gen_code_full.md",
-    "主函数/setjmp_gen_code.md",
-    "前端/plugin_gen_tb_start.md",
-    "主函数/main_step.drawio",
-    "主函数/user_main.c",
-    "主函数",
-    "新建文件夹",
-    "后端",
-    "前端",
-    "user_main.c",
-    "main_step.drawio"
+    "主函数/main_step.drawio"
   ]
 }
