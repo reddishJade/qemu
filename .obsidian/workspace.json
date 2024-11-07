@@ -13,7 +13,7 @@
             "state": {
               "type": "markdown",
               "state": {
-                "file": "Qemu_Detailed_Study.md",
+                "file": "QemuDetailedStudy/Qemu_Detailed_Study.md",
                 "mode": "source",
                 "source": false
               },
@@ -77,8 +77,7 @@
       }
     ],
     "direction": "horizontal",
-    "width": 300,
-    "collapsed": true
+    "width": 300
   },
   "right": {
     "id": "6b22f8a5ce958bc2",
@@ -94,7 +93,7 @@
             "state": {
               "type": "backlink",
               "state": {
-                "file": "前端&后端.md",
+                "file": "QemuDetailedStudy/Qemu_Detailed_Study.md",
                 "collapseAll": true,
                 "extraContext": false,
                 "sortOrder": "alphabetical",
@@ -104,7 +103,7 @@
                 "unlinkedCollapsed": true
               },
               "icon": "links-coming-in",
-              "title": "前端&后端 的反向链接列表"
+              "title": "Qemu_Detailed_Study 的反向链接列表"
             }
           },
           {
@@ -113,12 +112,12 @@
             "state": {
               "type": "outgoing-link",
               "state": {
-                "file": "translator_loop.md",
+                "file": "QemuDetailedStudy/Qemu_Detailed_Study.md",
                 "linksCollapsed": false,
                 "unlinkedCollapsed": true
               },
               "icon": "links-going-out",
-              "title": "translator_loop 的出链列表"
+              "title": "Qemu_Detailed_Study 的出链列表"
             }
           },
           {
@@ -140,19 +139,17 @@
             "state": {
               "type": "outline",
               "state": {
-                "file": "Qemu_Detailed_Study.md"
+                "file": "QemuDetailedStudy/Qemu_Detailed_Study.md"
               },
               "icon": "lucide-list",
               "title": "Qemu_Detailed_Study 的大纲"
             }
           }
-        ],
-        "currentTab": 3
+        ]
       }
     ],
     "direction": "horizontal",
-    "width": 300,
-    "collapsed": true
+    "width": 300
   },
   "left-ribbon": {
     "hiddenItems": {
@@ -166,10 +163,34 @@
   },
   "active": "1896170cf25809d2",
   "lastOpenFiles": [
-    "DBT/前端&后端.md",
+    "QemuDetailedStudy/Chaining of TBs.md",
+    "QemuDetailedStudy/Qemu_Detailed_Study.md",
+    "QemuDetailedStudy/Qemu-detail-study_05.png",
+    "QemuDetailedStudy/Qemu-detail-study_04.png",
+    "QemuDetailedStudy/Qemu-detail-study_03.png",
+    "QemuDetailedStudy/Qemu-detail-study_02.png",
+    "QemuDetailedStudy/Qemu-detail-study_100.png",
+    "QemuDetailedStudy/Qemu-detail-study_11.png",
+    "Qemu-detail-study_100.png",
+    "Qemu-detail-study_11.png",
+    "QemuDetailedStudy/Qemu-detail-study_10.png",
+    "QemuDetailedStudy/Qemu-detail-study_101.png",
+    "README.md",
     "Qemu_Detailed_Study.md",
-    "func/targeti386tcgtranslate.c.md",
+    "未命名.md",
+    "DBT/BackEnd/tcg_out32.md",
     "func/tcgtcg.c.md",
+    "DBT/BackEnd/tcg_out_insn_ldst.md",
+    "DBT/BackEnd/tcg_out_ldst.md",
+    "func/tcgsw_64tcg-target.c.inc.md",
+    "DBT/Front&Back.md",
+    "DBT/BackEnd/tcg_func_start.md",
+    "func/targeti386tcgtranslate.c.md",
+    "DBT/BackEnd/tcg_out_op.md",
+    "func/tcgsw_64tcg-target.c.inc",
+    "DBT/BackEnd/tcg_reg_alloc.md",
+    "DBT/BackEnd/tcg_reg_alloc_op.md",
+    "DBT/BackEnd/tcg_gen_code.md",
     "func/acceltcgtranslator.c.md",
     "func",
     "main/tb_gen_code_full.md",
@@ -179,29 +200,14 @@
     "main/main_step.md",
     "main/main_step.drawio",
     "main",
-    "DBT/前端/x86_ldub_code.md",
-    "DBT/前端/translator_loop.md",
-    "DBT/前端/translator_ldub.md",
-    "DBT/前端/translator_access.md",
-    "DBT/前端/plugin_gen_tb_start.md",
-    "DBT/前端/ldub.md",
-    "DBT/前端/i386_tr_translate_insn.md",
-    "DBT/前端/gen_tb_start&end.md",
-    "DBT/前端/gen_nop_modrm.md",
-    "DBT/前端/gen_intermediate_code.md",
-    "DBT/前端/disas_insn.md",
-    "DBT/前端/advance_pc.md",
-    "DBT/前端",
-    "DBT/后端/tcg_gen_code.md",
-    "DBT/后端/tcg_func_start.md",
-    "DBT/后端",
+    "DBT/FrontEnd/x86_ldub_code.md",
+    "DBT/FrontEnd/translator_loop.md",
+    "DBT/FrontEnd/translator_ldub.md",
+    "DBT/FrontEnd/translator_access.md",
+    "DBT/FrontEnd",
+    "DBT/BackEnd",
     "DBT",
     "新建文件夹",
-    "gdbinit.png",
-    "README.md",
-    "前端&后端.md",
-    "创建链接.md",
-    "关键函数",
-    "主函数/main_step.drawio"
+    "关键函数"
   ]
 }
