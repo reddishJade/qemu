@@ -1,14 +1,19 @@
 # Intro
-QEMU是一个机器模拟器，能够在其运行的机器上模拟多种处理器架构。在QEMU中，被模拟的架构称为Target。而运行 QEMU 并模拟 Target 的真实机器称为 Host 。QEMU通过一个名为 Tiny Code Generator（TCG） 的模块，将虚拟机（ Target ）代码动态翻译成 Host 代码。
 
-在TCG的上下文中，“Target”这个词有不同含义。TCG创建用于模拟目标的代码，因此由TCG生成的代码称为其“ Target ”。也就是说，在TCG的上下文中，目标指的是生成的 Host 代码。
+QEMU是一个机器模拟器，能够在其运行的机器上模拟多种处理器架构。在QEMU中，被模拟的架构称为 Target 。而运行 QEMU 并模拟 Target 的真实机器称为 Host 。QEMU通过一个名为 Tiny Code Generator（TCG） 的模块，将 Target 代码动态翻译成 Host 代码。
+
+在TCG的上下文中，“Target”这个词有不同含义。TCG创建用于模拟目标的代码，因此由TCG生成的代码称为其“ Target ”。也就是说，在TCG的上下文中，TCG 的 Target 指的是生成的 Host 代码。
 
 ![[Qemu-detail-study_00.png]]
 
-因此，我们可以将模拟处理器运行的代码（OS +  USER TOOLS）称为Guest Code。QEMU 的功能是提取Guest Code，并将其转换为Host Specific Code。
+因此，我们可以将虚拟机运行的代码（OS +  USER TOOLS）称为Guest Code。QEMU 的功能是提取Guest Code，并将其翻译为Host Specific Code。
 
-整个翻译任务包括两个部分：首先，将目标代码块——翻译块（TB）转换为 TCG ops（**一种独立于机器的中间符号**） ——一种与机器无关的中间符号IR，然后 TCG ops 为 TB 转换为 Host 架构的 Host Code 。在这两个步骤之间可以执行可选的优化步骤。
+整个翻译任务包括两个部分：
+1. 将目标代码块（翻译块TB的形式）转换为 TCG ops （一种机器无关的中间符号）
+2. 将TCG ops 转换为 Host 架构的 Host code
+在这两个步骤之间可以执行可选的优化步骤。（qemu7.2.0中是生成 Host 代码的过程中执行可选的优化）
 
+[[translation task‘s two parts]]
 # 7.1 代码库Codebase
 
 要添加新功能以扩展机器模拟器，并将生成的代码迁移到远程节点上执行，就必须清楚地了解 QEMU 代码库。QEMU 代码库有 1300 多个文件，这些文件被很好地组织到特定的部分。尽管代码组织得井井有条，但其复杂程度足以让任何新开发人员感到困惑。本节将介绍 QEMU 代码库的组织结构。
@@ -50,25 +55,26 @@ QEMU 中当前模拟的处理器架构有：Alpha、ARM、Cris、i386、M68K、P
 
 在 0.9.1 版之前，QEMU 中的动态翻译由 DynGen 执行。 TB 由 DynGen 转换为 C 代码，然后由 GCC（GNU C 编译器）将 C 代码转换为主机特定代码（host specific code）。该程序的问题在于 DynGen 与 GCC 紧密耦合，随着 GCC 的发展，这造成了问题。为了消除翻译器与 GCC 的紧密耦合，我们采用了一种新的程序：TCG。
 
-动态翻译在需要时转换代码。这样做的目的是花费尽可能多的时间执行生成的代码，而不是执行代码生成。每次从 TB 生成代码时，都会先将其存储在代码缓存（code cache）中，然后再执行。由于所谓的 “位置参考”（Locality Reference），大多数情况下都需要重复使用相同的 TB，因此最好将其保存起来，而不是重新生成相同的代码。一旦代码缓存满了，为了简化操作，就会刷新整个代码缓存，而不是使用 LRU （最近最少使用的页面置换）算法。
+动态翻译在需要时转换代码。这样做的目的是花费尽可能多的时间执行生成的代码，而不是执行代码生成。每次从 TB 生成代码时，都会先将其存储在代码缓存（code cache）中，然后再执行。由于所谓的 “位置参考”（Locality Reference）（重复性原则），大多数情况下都需要重复使用相同的 TB，因此最好将其保存起来，而不是重新生成相同的代码。一旦代码缓存满了，为了简化操作，就会刷新整个代码缓存，而不是使用 LRU （最近最少使用的页面置换）算法。
 
 ![[Qemu-detail-study_01.png]]
 
 编译器会在执行前从源代码中生成目标代码。为了生成函数调用的目标代码，GCC 等编译器会生成特殊的汇编代码，在函数调用之前和函数返回之前完成必要的工作。这些特殊的汇编代码被称为函数序言和尾声（ **Function Prologue and Epilogue** ）。
 
+[[Function Prologue and Epilogue]]
 ## Function Prologue
 如果体系结构有Base Pointer和Stack Pointer，**Function Prologue**通常会执行以下操作：
 
-- 将当前的基指针推入堆栈，以便稍后恢复。
-- 用当前栈指针替换旧的基指针，以便在旧栈顶部创建新栈。
-- 将栈指针沿堆栈进一步移动，以便在当前栈框架中为函数的局部变量腾出空间。
+- 将当前的基址指针(Base Pointer)压入栈中,以便于后续恢复。
+- 将基址指针设置为当前的栈指针(Stack Pointer), 以便在旧栈顶部创建新栈。
+- 移动栈指针,为函数的局部变量腾出空间。
 ## Function Epilogue
 **Function Epilogue** 将**Function Prologue**的操作颠倒过来，将控制权返回给调用函数。它通常执行以下操作
 
-- 用当前的基指针替换栈指针，使栈指针恢复到Prologue之前的值。
-- 将基数指针从栈中弹出，因此栈指针会恢复到Prologue之前的值。
+- 用当前的基指针替换栈指针，使栈指针恢复到 Prologue 之前的值。
+- 将基数指针从栈中弹出，因此栈指针会恢复到 Prologue 之前的值。
 序言
-- 将上一帧的程序计数器从栈中弹出并跳转到它，从而返回调用函数。
+- 将上一帧的程序计数器 ( PC ) 的值从栈中弹出并跳转到它，从而返回调用函数。
 
 TCG 本身就可以看作是一个编译器，它可以即时生成目标代码。TCG 生成的代码存储在缓冲区 buffer（代码缓存 code cache ）中。如图 7.3 所示，执行控制通过 TCG 的 “序言”（Prologue）和 “尾声”（Epilogue）在代码缓存之间传递。
 
@@ -77,7 +83,7 @@ TCG 本身就可以看作是一个编译器，它可以即时生成目标代码�
 ![[Qemu-detail-study_03.png]]
 
 ![[Qemu-detail-study_04.png]]
-# 7.3 TB 的链接：
+# 7.3 TB 链：
 
 从代码缓存返回到静态代码（QEMU 代码）并跳回代码缓存的速度通常较慢。为了解决这个问题，QEMU 将每个 TB 与下一个 TB 进行了链式处理。因此，在执行完一个 TB 后，执行将直接跳转到下一个 TB，而无需返回静态代码。当 TB 返回静态代码时，执行块链就会发生。因此，当 TB1 返回静态代码时（因为没有链锁），下一个 TB 即 TB2 就会被找到、生成并执行。当 TB2 返回时，它会立即链入 TB1。这就确保了下次执行 TB1 时，TB2 会紧随其后，而不会返回静态代码。
 
